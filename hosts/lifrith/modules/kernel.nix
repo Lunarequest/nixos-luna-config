@@ -165,9 +165,13 @@
       name = "clang-sexy";
       patch = null;
       extraStructuredConfig = with lib.kernel; {
-        LTO_CLANG_THIN = lib.mkForce lib.kernel.yes;
         CFI_CLANG = lib.mkForce lib.kernel.yes;
-        SHADOW_CALL_STACK = lib.mkForce lib.kernel.yes;
+        # this should make the kernel compile with thin lto but it doesnt :<
+        HAS_LTO_CLANG = lib.mkForce lib.kernel.yes;
+        ARCH_SUPPORTS_LTO_CLANG = lib.mkForce lib.kernel.yes;
+        ARCH_SUPPORTS_LTO_CLANG_THIN = lib.mkForce lib.kernel.yes;
+        LTO_CLANG = lib.mkForce lib.kernel.yes;
+        LTO_CLANG_THIN = lib.mkForce lib.kernel.yes;
       };
     }
   ];

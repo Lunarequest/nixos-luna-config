@@ -19,10 +19,12 @@
   };
 
   nixpkgs.overlays = [
-    (final: prev: {
-      linuxPackages_latest = prev.linuxPackages_latest.override {
-        stdenv = pkgs.clangStdenv;
-      };
+    (self: super: {
+      linuxPackages_latest = super.linuxPackages_latest.extend (lpself: lpsuper: {
+        kernel = lpsuper.kernel.override {
+          stdenv = pkgs.clangStdenv;
+        };
+      });
     })
   ];
 
