@@ -20,13 +20,8 @@
 
   nixpkgs.overlays = [
     (final: prev: {
-      linuxPackages_latest = prev.linuxPackages.override {
+      linuxPackages_latest = prev.linuxPackages_latest.override {
         stdenv = pkgs.clangStdenv;
-        LLVM=1;
-        LLVM_IAS=1;
-        CC="clang";
-        CXX="clang++";
-        LD="lld.ld";
       };
     })
   ];
@@ -41,7 +36,12 @@
       systemd-boot.enable = true;
       efi.canTouchEfiVariables = true;
     };
-    kernelPackages = pkgs.linuxPackages;
+    kernelPackages = pkgs.linuxPackages_latest.extend (self: super: {
+      kernel = super.kernel.overrideAttrs (old: {
+        LLVM = 1;
+        LLVM_IAS = 1;
+      });
+    });
   };
 
   networking.hostName = "Lifrith"; # Define your hostname.
