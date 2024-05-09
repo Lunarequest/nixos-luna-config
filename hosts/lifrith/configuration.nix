@@ -4,6 +4,7 @@
 {
   config,
   pkgs,
+  lib,
   ...
 }: {
   imports = [
@@ -40,8 +41,10 @@
     };
     kernelPackages = pkgs.linuxPackages_latest.extend (self: super: {
       kernel = super.kernel.overrideAttrs (old: {
+        nativeBuildInputs = old.nativeBuildInputs ++ [pkgs.lld];
         LLVM = 1;
         LLVM_IAS = 1;
+        LD = "lld.ld";
       });
     });
   };

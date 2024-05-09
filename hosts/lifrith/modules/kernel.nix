@@ -7,6 +7,17 @@
   boot.kernelParams = ["zswap.enabled=1"];
   boot.kernelPatches = [
     {
+      name = "clang-sexy";
+      patch = null;
+      extraStructuredConfig = with lib.kernel; {
+        CFI_CLANG = lib.mkForce lib.kernel.yes;
+        # this should make the kernel compile with thin lto
+        LTO_NONE = lib.mkForce lib.kernel.no;
+        LTO_CLANG = lib.mkForce lib.kernel.yes;
+        LTO_CLANG_THIN = lib.mkForce lib.kernel.yes;
+      };
+    }
+    {
       name = "tcp-congest";
       patch = null;
       extraStructuredConfig = with lib.kernel; {
@@ -159,19 +170,6 @@
         UFS_FS = lib.mkForce lib.kernel.no;
         GFS2_FS = lib.mkForce lib.kernel.no;
         OCFS2_FS = lib.mkForce lib.kernel.no;
-      };
-    }
-    {
-      name = "clang-sexy";
-      patch = null;
-      extraStructuredConfig = with lib.kernel; {
-        CFI_CLANG = lib.mkForce lib.kernel.yes;
-        # this should make the kernel compile with thin lto but it doesnt :<
-        HAS_LTO_CLANG = lib.mkForce lib.kernel.yes;
-        ARCH_SUPPORTS_LTO_CLANG = lib.mkForce lib.kernel.yes;
-        ARCH_SUPPORTS_LTO_CLANG_THIN = lib.mkForce lib.kernel.yes;
-        LTO_CLANG = lib.mkForce lib.kernel.yes;
-        LTO_CLANG_THIN = lib.mkForce lib.kernel.yes;
       };
     }
   ];
