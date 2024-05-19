@@ -9,6 +9,7 @@
     packages = with pkgs; [
       vscode
       cascadia-code
+      (pkgs.uutils-coreutils.override {prefix = "";})
     ];
   };
 

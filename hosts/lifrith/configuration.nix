@@ -7,6 +7,41 @@
   lib,
   ...
 }: {
+  nixpkgs.overlays = [
+    (self: super: {
+      luna_linux = let
+        baseKernel = pkgs.linux_latest;
+      in
+        pkgs.linuxManualConfig {
+          inherit (baseKernel) src modDirVersion;
+          stdenv = pkgs.llvmPackages_18.stdenv;
+          nativeBuildInputs = with pkgs;
+            baseKernel.nativeBuildInputs
+            ++ [
+              llvmPackages_18.lld
+              llvmPackages_18.clangUseLLVM
+              pkgs.llvmPackages_18.llvm
+            ];
+          LLVM = "1";
+          LLVM_IAS = "1";
+          CC = "${pkgs.llvmPackages_18.clangUseLLVM}/bin/clang";
+          HOSTCC = "${pkgs.llvmPackages_18.clangUseLLVM}/bin/clang";
+          LD = "${pkgs.llvmPackages_18.lld}/bin/ld.lld";
+          HOSTLD = "${pkgs.llvmPackages_18.lld}/bin/ld.lld";
+          AR = "${pkgs.llvmPackages_18.llvm}/bin/llvm-ar";
+          HOSTAR = "${pkgs.llvmPackages_18.llvm}/bin/llvm-ar";
+          NM = "${pkgs.llvmPackages_18.llvm}/bin/llvm-nm";
+          STRIP = "${pkgs.llvmPackages_18.llvm}/bin/llvm-strip";
+          OBJCOPY = "${pkgs.llvmPackages_18.llvm}/bin/llvm-objcopy";
+          OBJDUMP = "${pkgs.llvmPackages_18.llvm}/bin/llvm-objdump";
+          READELF = "${pkgs.llvmPackages_18.llvm}/bin/llvm-readelf";
+          HOSTCXX = "${pkgs.llvmPackages_18.clangUseLLVM}/bin/clang++";
+          version = "${baseKernel.version}-luna";
+          configfile = ../../kernel/.config;
+          allowImportFromDerivation = true;
+        };
+    })
+  ];
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
@@ -19,16 +54,6 @@
     };
   };
 
-  nixpkgs.overlays = [
-    (self: super: {
-      linuxPackages_latest = super.linuxPackages_latest.extend (lpself: lpsuper: {
-        kernel = lpsuper.kernel.override {
-          stdenv = pkgs.clangStdenv;
-        };
-      });
-    })
-  ];
-
   hardware.bluetooth = {
     enable = true;
     powerOnBoot = true;
@@ -39,14 +64,6 @@
       systemd-boot.enable = true;
       efi.canTouchEfiVariables = true;
     };
-    kernelPackages = pkgs.linuxPackages_latest.extend (self: super: {
-      kernel = super.kernel.overrideAttrs (old: {
-        nativeBuildInputs = old.nativeBuildInputs ++ [pkgs.lld];
-        LLVM = 1;
-        LLVM_IAS = 1;
-        LD = "lld.ld";
-      });
-    });
   };
 
   networking.hostName = "Lifrith"; # Define your hostname.
@@ -117,9 +134,6 @@
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
-    # If you want to use JACK applications, uncomment this
-    #jack.enable = true;
-
     wireplumber.enable = true;
   };
 
@@ -157,11 +171,13 @@
     neovim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     wget
     clang_18
-    (vivaldi.override {
-      proprietaryCodecs = true;
-      enableWidevine = false;
-    })
     vivaldi-ffmpeg-codecs
+    (
+      pkgs.vivaldi.override {
+        proprietaryCodecs = true;
+        enableWidevine = true;
+      }
+    )
     widevine-cdm
     rustup
   ];

@@ -7,6 +7,10 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    dotfox = {
+      url = "github:Lunarequest/Dotfox";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     # sexy lix shizz
     lix = {
       url = "git+https://git@git.lix.systems/lix-project/lix?ref=refs/tags/2.90-beta.1";
