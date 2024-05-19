@@ -17,7 +17,7 @@
             inherit (baseKernel.kernel) src modDirVersion;
             stdenv = pkgs.llvmPackages_18.stdenv;
             version = "${baseKernel.kernel.version}-luna";
-            configfile = ../../kernel/.config;
+            configfile = ../../kernel/luna-config;
             allowImportFromDerivation = true;
           })
         .overrideAttrs (old: {
