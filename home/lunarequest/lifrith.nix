@@ -9,7 +9,10 @@
     packages = with pkgs; [
       vscode
       cascadia-code
-      (pkgs.uutils-coreutils.override {prefix = "";})
+      (pkgs.uutils-coreutils.override {
+        prefix = "";
+        buildMulticallBinary = false;
+      })
     ];
   };
 

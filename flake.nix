@@ -35,7 +35,7 @@
 
     nixosConfigurations.Lifrith = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
-      specialArgs = attrs;
+      specialArgs = {inherit attrs;};
       modules = [
         ./hosts/lifrith/configuration.nix
         lix-module.nixosModules.default

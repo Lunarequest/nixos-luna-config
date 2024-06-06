@@ -5,6 +5,7 @@
   config,
   pkgs,
   lib,
+  attrs,
   ...
 }: {
   nixpkgs.overlays = [
@@ -14,10 +15,17 @@
           baseKernel = pkgs.linuxPackages_latest;
         in
           pkgs.linuxManualConfig {
+            # here we inhert the src and modDriVersion from baseKernel,
+            # we don't want to redfine these
             inherit (baseKernel.kernel) src modDirVersion;
+            # we do want to overwrite the stdenv we like
             stdenv = pkgs.llvmPackages_18.stdenv;
+            # we rename the kernel to know we're on the right one
+            # this is also why we need to inhert modDirVersion
             version = "${baseKernel.kernel.version}-luna";
+            # out config
             configfile = ../../kernel/luna-config;
+            # required to fix some things
             allowImportFromDerivation = true;
           })
         .overrideAttrs (old: {
@@ -27,6 +35,9 @@
               llvmPackages_18.lld
               llvmPackages_18.clangUseLLVM
               llvmPackages_18.llvm
+              openssl_3_3
+              zstd
+              pahole
             ];
           LLVM = "1";
           LLVM_IAS = "1";
@@ -184,6 +195,7 @@
     )
     widevine-cdm
     rustup
+    attrs.dotfox.packages.x86_64-linux.dotfox
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
